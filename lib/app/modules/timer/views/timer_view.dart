@@ -17,6 +17,12 @@ class TimerView extends GetView<TimerController> {
   Widget build(BuildContext context) {
     var width = Get.width;
     var height = Get.height;
+    List<Map<String, dynamic>> timeCards = [
+      {'text': 1, 'minutes': 1},
+      {'text': 5, 'minutes': 5},
+      {'text': 10, 'minutes': 10},
+      {'text': 30, 'minutes': 30},
+    ];
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(height / 7.9),
@@ -99,12 +105,14 @@ class TimerView extends GetView<TimerController> {
                           heroTag: 'pause',
                           onPressed: () {
                             Utils.hapticFeedback();
-                            controller.isTimerPaused.value
-                                ? controller.resumeTimer()
-                                : controller.pauseTimer();
+                            if(controller.isTimerPaused.isTrue){
+                              controller.resumeTimer();
+                            }else{
+                              controller.pauseTimer();
+                            }
                           },
                           child: Icon(
-                            controller.isTimerPaused.value
+                            controller.isTimerPaused.isTrue
                                 ? Icons.play_arrow
                                 : Icons.pause,
                           ),
@@ -114,79 +122,86 @@ class TimerView extends GetView<TimerController> {
                   ),
                 ],
               )
-            : Obx(
-                () => Stack(
-                  children: [
-                    ListView(
-                      children: [
-                        Container(
-                          color: themeController.isLightMode.value
-                              ? kLightPrimaryBackgroundColor
-                              : kprimaryBackgroundColor,
-                          height: height * 0.32,
-                          width: width,
-                          child: Obx(
-                            () => TimePickerSpinner(
-                              time: DateTime(0, 0, 0, 0, 1, 0),
-                              minutesInterval: 1,
-                              secondsInterval: 1,
-                              is24HourMode: true,
-                              isShowSeconds: true,
-                              alignment: Alignment.center,
-                              normalTextStyle: Theme.of(context)
-                                  .textTheme
-                                  .displayMedium!
-                                  .copyWith(
-                                    fontWeight: FontWeight.normal,
-                                    color: themeController.isLightMode.value
-                                        ? kLightPrimaryDisabledTextColor
-                                        : kprimaryDisabledTextColor,
-                                  ),
-                              highlightedTextStyle:
-                                  Theme.of(context).textTheme.displayMedium,
-                              onTimeChange: (dateTime) {
-                                Utils.hapticFeedback();
-                                controller.remainingTime.value = Duration(
-                                  hours: dateTime.hour,
-                                  minutes: dateTime.minute,
-                                  seconds: dateTime.second,
-                                );
-                              },
-                            ),
+            : ListView(
+                children: [
+                  Container(
+                    color: themeController.isLightMode.value
+                        ? kLightPrimaryBackgroundColor
+                        : kprimaryBackgroundColor,
+                    height: height * 0.32,
+                    width: width,
+                    child: Obx(
+                      () => TimePickerSpinner(
+                        time: DateTime(0, 0, 0, 0, 1, 0),
+                        minutesInterval: 1,
+                        secondsInterval: 1,
+                        is24HourMode: true,
+                        isShowSeconds: true,
+                        alignment: Alignment.center,
+                        normalTextStyle: Theme.of(context)
+                          .textTheme
+                          .displayMedium!
+                          .copyWith(
+                                fontWeight: FontWeight.normal,
+                                color: themeController.isLightMode.value
+                                    ? kLightPrimaryDisabledTextColor
+                                    : kprimaryDisabledTextColor,
+                              ),
+                        highlightedTextStyle:
+                        Theme.of(context).textTheme.displayMedium,
+                        onTimeChange: (dateTime) {
+                          Utils.hapticFeedback();
+                          controller.remainingTime.value = Duration(
+                            hours: dateTime.hour,
+                            minutes: dateTime.minute,
+                            seconds: dateTime.second,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  ...timeCards.map((timeCard) => Card(
+                        color: Theme.of(context).primaryColor,
+                        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 9.0), // Add padding to Card
+                        child: Padding( // Add padding to ListTile
+                          padding: const EdgeInsets.all(3.0),
+                          child: ListTile(
+                            onTap: () {
+                              Utils.hapticFeedback();
+                              controller.remainingTime.value =
+                                Duration(minutes: timeCard['minutes']!);
+                            },
+                            title: Text('${timeCard['text']} min',
+                            style: TextStyle(
+                                        fontWeight: FontWeight.w600)), // Adjusted text weight
                           ),
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                      )).toList(),
+                ],
               ),
       ),
       floatingActionButton: Obx(
         () => controller.isTimerRunning.value
             ? const SizedBox()
-            : Obx(
-                () => AbsorbPointer(
-                  absorbing: controller.remainingTime.value.inHours == 0 &&
-                          controller.remainingTime.value.inMinutes == 0 &&
-                          controller.remainingTime.value.inSeconds == 0
-                      ? true
-                      : false,
-                  child: FloatingActionButton(
-                    onPressed: () {
-                            Utils.hapticFeedback();
-                            controller.startTimer();
-                            controller.createTimer();
-                          },
-                    backgroundColor:
-                        controller.remainingTime.value.inHours == 0 &&
-                                controller.remainingTime.value.inMinutes == 0 &&
-                                controller.remainingTime.value.inSeconds == 0
-                            ? kprimaryDisabledTextColor
-                            : kprimaryColor,
-                    child: const Icon(
-                      Icons.play_arrow_rounded,
-                    ),
-                  ),
+            : FloatingActionButton(
+                onPressed: () {
+                        Utils.hapticFeedback();
+                        if(controller.remainingTime.value.inHours == 0 &&
+                           controller.remainingTime.value.inMinutes == 0 &&
+                           controller.remainingTime.value.inSeconds == 0){
+                          return;
+                        }
+                        controller.startTimer();
+                        controller.createTimer();
+                      },
+                backgroundColor:
+                    controller.remainingTime.value.inHours == 0 &&
+                            controller.remainingTime.value.inMinutes == 0 &&
+                            controller.remainingTime.value.inSeconds == 0
+                        ? kprimaryDisabledTextColor
+                        : kprimaryColor,
+                child: const Icon(
+                  Icons.play_arrow_rounded,
                 ),
               ),
       ),

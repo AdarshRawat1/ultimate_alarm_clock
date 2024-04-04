@@ -21,6 +21,8 @@ class TimerController extends GetxController with WidgetsBindingObserver {
 
   final _secureStorageProvider = SecureStorageProvider();
 
+  get time => null;
+
   String strDigits(int n) => n.toString().padLeft(2, '0');
 
   @override
@@ -197,4 +199,6 @@ class TimerController extends GetxController with WidgetsBindingObserver {
       remainingTime.value = Duration(seconds: seconds);
     }
   }
+
+  void updateSpinner() {}
 }

@@ -3,6 +3,7 @@ import 'package:ultimate_alarm_clock/app/modules/about/bindings/about_binding.da
 import 'package:ultimate_alarm_clock/app/modules/about/views/about_view.dart';
 import 'package:ultimate_alarm_clock/app/modules/bottomNavigationBar/bindings/bottom_navigation_bar_binding.dart';
 import 'package:ultimate_alarm_clock/app/modules/bottomNavigationBar/views/bottom_navigation_bar_view.dart';
+import 'package:ultimate_alarm_clock/app/modules/bottomNavigationBar/views/home_timer_switcher_view.dart';
 import 'package:ultimate_alarm_clock/app/modules/splashScreen/bindings/splash_screen_binding.dart';
 import 'package:ultimate_alarm_clock/app/modules/splashScreen/views/splash_screen_view.dart';
 import 'package:ultimate_alarm_clock/app/modules/timerRing/bindings/timer_ring_binding.dart';
@@ -15,7 +16,6 @@ import '../modules/alarmChallenge/views/alarm_challenge_view.dart';
 import '../modules/alarmRing/bindings/alarm_ring_binding.dart';
 import '../modules/alarmRing/views/alarm_ring_view.dart';
 import '../modules/home/bindings/home_binding.dart';
-import '../modules/home/views/home_view.dart';
 import '../modules/settings/bindings/settings_binding.dart';
 import '../modules/settings/views/settings_view.dart';
 
@@ -34,7 +34,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.HOME,
-      page: () => HomeView(),
+      page: () => HomeTimerSwitcherView(),
       binding: HomeBinding(),
     ),
     GetPage(
